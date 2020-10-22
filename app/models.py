@@ -50,7 +50,7 @@ class Patient(db.Model):
     first_name = db.Column(db.String)
     second_name = db.Column(db.String)
     patronymic = db.Column(db.String)
-    phone_number = db.Column(db.String, index=True, unique=True)
+    phone_number = db.Column(db.String, index=True, unique=False)
     age = db.Column(db.Integer)
     time_arrived = db.Column(db.DateTime, default=datetime.utcnow)
     last_seen = db.Column(db.DateTime)

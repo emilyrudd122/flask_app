@@ -28,7 +28,7 @@
 
                 {% if not doctor.second_name %}
                     {% if doctors %}
-                    <form method="POST" action="/patasys/patient/{{patient.id}}/2">
+                    <form method="POST" action="/patient/{{patient.id}}/2">
                         <div class="form-group">
                             <label for="exampleFormControlSelect1">Выберите врача</label>
                             <select class="form-control" name="doctor">
@@ -45,7 +45,7 @@
                     {% endif %}
                 {% else %}
                     {% if doctors %}
-                        <form method="POST" action="/patasys/patient/{{patient.id}}/2">
+                        <form method="POST" action="/patient/{{patient.id}}/2">
                             <div class="form-group">
                                 <label for="exampleFormControlSelect1">Выберите врача</label>
                                 <select class="form-control" name="doctor">
@@ -77,6 +77,20 @@
             </div>
 
         </div>
+        <h3>Будущие приемы</h3>
+        <div class="row">
+            <div class="col">
+                
+                    {% for vis in patient.visits %}
+                        {% if vis.visit_time > current_time %}
+                            <p>{{ vis.visit_time|ctime }}</p>
+                        {% endif %}
+                    {% endfor %}
+
+
+                        </div>
+                    </div>
+                
         <h3>История приемов</h3>
         <div class="row">
             <div class="col">
@@ -102,6 +116,6 @@
            
             <!-- <input id="datetimepicker" type="text" > -->
             <script>jQuery('#datetimepicker').datetimepicker({
-                format:'Y-m-d H:i'
+                format:'d-m-Y H:i'
             });</script>
 {% endblock %}

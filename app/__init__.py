@@ -28,10 +28,10 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
     from app.main import bp as main_bp
-    app.register_blueprint(main_bp)
+    app.register_blueprint(main_bp, url_prefix='/main')
 
     from app.patasys import bp as patasys_bp
-    app.register_blueprint(patasys_bp, url_prefix='/patasys')
+    app.register_blueprint(patasys_bp)
 
     if not app.debug and not app.testing:
         if not os.path.exists('logs'):

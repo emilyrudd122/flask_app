@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*- 
+import random
+from config import Config
 from app.auth.routes import login
 from flask import render_template, redirect, flash, request
 from flask.helpers import url_for
@@ -24,6 +26,79 @@ def index():
 def timectime(s):
     value = datetime.fromtimestamp(int(s))
     return value.strftime(Config.DATETIME_FORMAT)
+
+# @login_required
+# @bp.route('/add_dannie')
+# def add_dannie():
+#     names = [
+#         'Ева',
+#         'Марина',
+#         'Мальвина',
+#         'Надежда',
+#         'Галина',
+#         'Виолетта',
+#         'Варвара',
+#         'Амина',
+#         'Алина',
+#         'Алёна',
+#         'Дарья',
+#         'Джоан',
+#         'Анастасия',
+#         'Нонна',
+#         'Кристина',
+#         'Ксения',
+#         'Корнелия',
+#         'Лариса',
+#     ]
+#     families = [
+#         'Акимова',
+#         'Матвеева',
+#         'Воробьёва',
+#         'Дьякова',
+#         'Воронцова',
+#         'Голубева',
+#         'Гришина',
+#         'Дедова',
+#         'Винокурова',
+#         'Исаева',
+#         'Соболева',
+#         'Смирнова',
+#         'Казакова',
+#     ]
+#     patronymics = [
+#         'Ивановна',
+#         'Петровна',
+#         'Данииловна',
+#         'Михайловна',
+#         'Семёновна',
+#         'Максимовна',
+#         'Алишеровна',
+#         'Мухаммедовна',
+#         'Владиславовна',
+#         'Артуровна',
+#         'Лаврентьевна',
+#         'Гордеевна',
+#     ]
+#     ages = [15,17,19,25,28,35,22,29,33,51]
+#     phone_number = 89855552233
+
+#     for i in range(2000):
+#         n = random.randint(0,len(names)-1)
+#         f = random.randint(0,len(families)-1)
+#         p = random.randint(0,len(patronymics)-1)
+#         a = random.randint(0,len(ages)-1)
+#         pat = Patient(
+#             first_name=names[n],
+#             second_name=families[f],
+#             patronymic=patronymics[p],
+#             phone_number=phone_number,
+#             age=ages[a],
+#         )
+#         db.session.add(pat)
+    
+#     db.session.commit()
+#     flash('Done!')
+#     return redirect(url_for('patasys.index'))
 
 
 @login_required
@@ -57,9 +132,7 @@ def add_doctor():
             first_name=form.first_name.data, 
             second_name=form.second_name.data,
             phone_number=form.phone_number.data,
-            patronymic=form.patronymic.data,
-
-        
+            patronymic=form.patronymic.data,        
         )
         db.session.add(doctor)
         db.session.commit()
@@ -67,12 +140,81 @@ def add_doctor():
         return redirect(url_for('patasys.index'))
     return render_template('patasys/add_doctor.html', title='Add doctor', form=form)
 
+
+@bp.route('/all_patients', methods=['GET', 'POST'])
+@bp.route('/all_patients/<int:page>', methods=['GET', 'POST'])
+@bp.route('/all_patients/<string:search>/<int:page>', methods=['GET', 'POST'])
 @login_required
-@bp.route('/all_patients')
-def all_patients():
-    patients = Patient.query.order_by(Patient.second_name).all()
+def all_patients(search=None, page=1):
+    sort = ''
+    # if request.method == 'POST':
+    #     txt = request.form.get('txt')
+    #     txt = txt.capitalize()
+    #     if len(txt.split(' ')) > 1:
+    #         flash('Пока что умею искать только по одному слову')
+    #         return redirect(url_for('patasys.all_patients'))
+    #     qwe = Patient.query.filter(
+    #         (Patient.first_name.like(txt)) | (Patient.second_name.like(txt)) | (Patient.patronymic.like(txt))
+    #     ).paginate(1, 1000, False)
+    #     context = {
+    #         'patients': qwe,
+    #         'sort': sort
+    #     }
+    #     return render_template('patasys/all_patients.html', **context)
+    
+    args = request.args
+    if "search" in args:
+        txt = args.get('search')
+        if len(txt.split(' ')) > 1:
+            flash('Пока что умею искать только по одному слову')
+            return redirect(url_for('patasys.all_patients'))
+        search = txt.capitalize()
+        qwe = Patient.query.filter(
+                (Patient.first_name.like(search)) | (Patient.second_name.like(search)) | (Patient.patronymic.like(search))
+            ).paginate(page, 5, False)
+        context = {
+            'patients': qwe,
+            'sort': sort
+        }
+        return redirect(url_for('patasys.all_patients', search=txt, page=1))
+
+    if search is not None:
+        if len(search.split(' ')) > 1:
+            flash('Пока что умею искать только по одному слову')
+            return redirect(url_for('patasys.all_patients'))
+        search = search.capitalize()
+        qwe = Patient.query.filter(
+                (Patient.first_name.like(search)) | (Patient.second_name.like(search)) | (Patient.patronymic.like(search))
+            ).paginate(page, 5, False)
+        context = {
+            'patients': qwe,
+            'sort': sort,
+            'search': search,
+            'page': page,
+        }
+        print(search)
+        return render_template('patasys/all_patients.html', **context)
+
+    
+    # patients = Patient.query.order_by(Patient.second_name).all()
+    if "name" in args:
+        patients = Patient.query.order_by(Patient.first_name).paginate(page, Config.PATIENTS_PER_PAGE, False)
+        sort='name'
+    elif "second" in args:
+        patients = Patient.query.order_by(Patient.second_name).paginate(page, Config.PATIENTS_PER_PAGE, False)
+        sort='second'
+    elif "patronymic" in args:
+        patients = Patient.query.order_by(Patient.patronymic).paginate(page, Config.PATIENTS_PER_PAGE, False)
+        sort='patronymic'
+    else:
+        patients = Patient.query.order_by(Patient.second_name).paginate(page, Config.PATIENTS_PER_PAGE, False)
+        sort='second'
+
+    
     context = {
         'patients': patients,
+        'sort': sort,
+        'page': page,
     }
     return render_template('patasys/all_patients.html', **context)
 

@@ -3,38 +3,60 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col"> 
-                <h3>Пациенты</h3>
+            <div class="col">
+                <form class="form-inline" method="get" action="/all_patients">
+                    <h3>Пациенты</h3>
+                    <input style="margin-left:10px" class="form-control mr-sm-2" type="search" placeholder="Введите данные..." aria-label="Поиск" name="search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+                  </form>
                 {% if patients %}
 
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Фамилия</th>
-                            <th scope="col">Имя</th>
-                            <th scope="col">Отчество</th>
+                            {% if sort == 'second' %}
+                            <th scope="col">Фамилия &#8595;</th>
+                            {% else %}
+                            <th scope="col"><a href="{{ url_for('patasys.all_patients', second='')}}">Фамилия</a></th>
+                            {% endif %}
+                            {% if sort == 'name' %}
+                            <th scope="col">Имя &#8595;</th>
+                            {% else %}
+                            <th scope="col"><a href="{{ url_for('patasys.all_patients', name='')}}">Имя</a></th>
+                            {% endif %}
+                            {% if sort == 'patronymic' %}
+                            <th scope="col">Отчество &#8595;</th>
+                            {% else %}
+                            <th scope="col"><a href="{{ url_for('patasys.all_patients', patronymic='')}}">Отчество</a></th>
+                            {% endif %}
                             <th scope="col">###</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for patient in patients %}
+                        {% for patient in patients.items %}
                         <tr>
                             <td>{{ patient.second_name }}</td>
                             <td>{{ patient.first_name }}</td>
                             <td>{{ patient.patronymic }}</td>
                             <td><a href="{{ url_for('patasys.view_patient', patient_id=patient.id, funcc=1) }}">Личная карта</a></td>
                         </tr>
-
-<!-- 
-
-
-
-                        <li><a href="{{ url_for('patasys.view_patient', patient_id=patient.id, funcc=1) }}">{{ patient.second_name }} {{ patient.first_name }} {{ patient.patronymic}}</a></li>
-                        <br> -->
                     {% endfor %}
                     </tbody>
                 </table>
 
+                <center>
+                {% if search == None %}
+                    {% if patients.has_prev %}<a href="{{ url_for('patasys.all_patients', page = patients.prev_num) }}"><< Предыдущие пациенты</a>
+                    {% else %}<< Предыдущие пациенты{% endif %} | 
+                    {% if patients.has_next %}<a href="{{ url_for('patasys.all_patients', page = patients.next_num) }}">Следующие пациенты >></a>
+                    {% else %}Следующие пациенты >>{% endif %}
+                {% else %}
+                {% if patients.has_prev %}<a href="{{ url_for('patasys.all_patients', search=search, page = patients.prev_num) }}"><< Предыдущие пациенты</a>
+                {% else %}<< Предыдущие пациенты{% endif %} | 
+                {% if patients.has_next %}<a href="{{ url_for('patasys.all_patients', search=search, page = patients.next_num) }}">Следующие пациенты >></a>
+                {% else %}Следующие пациенты >>{% endif %}
+                {% endif %}
+            </center>
                 {% else %}
                 <p>Пациентов пока что нет</p>
                 {% endif %}

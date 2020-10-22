@@ -7,6 +7,9 @@
         <div>
             <p>{{ vis.visit_time|ctime }}</p>
             <p>{{ vis.visit_time }}</p>
+            {% for pat in patients[vis.patient_id] %}
+                {{ pat.first_name }} 
+            {% endfor %}
         </div>
         {% endfor %}
     </div>

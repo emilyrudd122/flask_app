@@ -3,26 +3,40 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-sm"> 
+            <div class="col"> 
                 <h3>Пациенты</h3>
                 {% if patients %}
-                    {% for patient in patients %}
-                        <a href="{{ url_for('patasys.view_patient', patient_id=patient.id, funcc=1) }}">{{ patient.second_name }} {{ patient.first_name }} {{ patient.patronymic}}</a>
-                        <br>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Фамилия</th>
+                            <th scope="col">Имя</th>
+                            <th scope="col">Отчество</th>
+                            <th scope="col">###</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>{{ patient.second_name }}</td>
+                            <td>{{ patient.first_name }}</td>
+                            <td>{{ patient.patronymic }}</td>
+                            <td><a href="{{ url_for('patasys.view_patient', patient_id=patient.id, funcc=1) }}">Личная карта</a></td>
+                        </tr>
+
+<!-- 
+
+
+
+                        <li><a href="{{ url_for('patasys.view_patient', patient_id=patient.id, funcc=1) }}">{{ patient.second_name }} {{ patient.first_name }} {{ patient.patronymic}}</a></li>
+                        <br> -->
                     {% endfor %}
+                    </tbody>
+                </table>
+
                 {% else %}
                 <p>Пациентов пока что нет</p>
-                {% endif %}
-            </div>
-            <div class="col-sm"> 
-                <h3>Доктора</h3>
-                {% if doctors %}
-                    {% for doctor in doctors %}
-                        {{ doctor.second_name }} {{ doctor.first_name }} {{ doctor.patronymic}}
-                        <br>
-                    {% endfor %}
-                {% else %}
-                    <p>Докторов пока что нет</p>
                 {% endif %}
             </div>
         </div>

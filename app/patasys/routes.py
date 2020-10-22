@@ -70,11 +70,9 @@ def add_doctor():
 @login_required
 @bp.route('/all_patients')
 def all_patients():
-    patients = Patient.query.all()
-    doctors = Doctor.query.all()
+    patients = Patient.query.order_by(Patient.second_name).all()
     context = {
         'patients': patients,
-        'doctors': doctors,
     }
     return render_template('patasys/all_patients.html', **context)
 
@@ -167,10 +165,17 @@ def add_service():
 def schedule():
     hours = int(datetime.today().strftime("%H"))
     minutes = int(datetime.today().strftime("%M"))
-    visits = Visit.query.filter(
-        Visit.visit_time>=(int(time.time())-(hours*3600-minutes*60)),
-        Visit.visit_time<=(int(time.time())+((24-hours)*3600-minutes*60)),
+    # visits = Visit.query.filter(
+    #     Visit.visit_time>=(int(time.time())-(hours*3600-minutes*60)),
+    #     Visit.visit_time<=(int(time.time())+((24-hours)*3600-minutes*60)),
            
-    )
+    # )
+    visits = Visit.query.all()
+    pats = {}
+    for v in visits:
+        pa = Patient.query.filter_by(id=v.patient_id)
+        q = {v.patient_id:pa}
+        pats.update(q)
+    
 
-    return render_template('patasys/schedule.html', visits=visits)
+    return render_template('patasys/schedule.html', visits=visits, patients=pats)

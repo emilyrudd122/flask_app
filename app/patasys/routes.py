@@ -27,78 +27,78 @@ def timectime(s):
     value = datetime.fromtimestamp(int(s))
     return value.strftime(Config.DATETIME_FORMAT)
 
-@login_required
-@bp.route('/add_dannie')
-def add_dannie():
-    names = [
-        'Ева',
-        'Марина',
-        'Мальвина',
-        'Надежда',
-        'Галина',
-        'Виолетта',
-        'Варвара',
-        'Амина',
-        'Алина',
-        'Алёна',
-        'Дарья',
-        'Джоан',
-        'Анастасия',
-        'Нонна',
-        'Кристина',
-        'Ксения',
-        'Корнелия',
-        'Лариса',
-    ]
-    families = [
-        'Акимова',
-        'Матвеева',
-        'Воробьёва',
-        'Дьякова',
-        'Воронцова',
-        'Голубева',
-        'Гришина',
-        'Дедова',
-        'Винокурова',
-        'Исаева',
-        'Соболева',
-        'Смирнова',
-        'Казакова',
-    ]
-    patronymics = [
-        'Ивановна',
-        'Петровна',
-        'Данииловна',
-        'Михайловна',
-        'Семёновна',
-        'Максимовна',
-        'Алишеровна',
-        'Мухаммедовна',
-        'Владиславовна',
-        'Артуровна',
-        'Лаврентьевна',
-        'Гордеевна',
-    ]
-    ages = [15,17,19,25,28,35,22,29,33,51]
-    phone_number = 89855552233
+# @login_required
+# @bp.route('/add_dannie')
+# def add_dannie():
+#     names = [
+#         'Ева',
+#         'Марина',
+#         'Мальвина',
+#         'Надежда',
+#         'Галина',
+#         'Виолетта',
+#         'Варвара',
+#         'Амина',
+#         'Алина',
+#         'Алёна',
+#         'Дарья',
+#         'Джоан',
+#         'Анастасия',
+#         'Нонна',
+#         'Кристина',
+#         'Ксения',
+#         'Корнелия',
+#         'Лариса',
+#     ]
+#     families = [
+#         'Акимова',
+#         'Матвеева',
+#         'Воробьёва',
+#         'Дьякова',
+#         'Воронцова',
+#         'Голубева',
+#         'Гришина',
+#         'Дедова',
+#         'Винокурова',
+#         'Исаева',
+#         'Соболева',
+#         'Смирнова',
+#         'Казакова',
+#     ]
+#     patronymics = [
+#         'Ивановна',
+#         'Петровна',
+#         'Данииловна',
+#         'Михайловна',
+#         'Семёновна',
+#         'Максимовна',
+#         'Алишеровна',
+#         'Мухаммедовна',
+#         'Владиславовна',
+#         'Артуровна',
+#         'Лаврентьевна',
+#         'Гордеевна',
+#     ]
+#     ages = [15,17,19,25,28,35,22,29,33,51]
+#     phone_number = 89855552233
 
-    for i in range(2000):
-        n = random.randint(0,len(names)-1)
-        f = random.randint(0,len(families)-1)
-        p = random.randint(0,len(patronymics)-1)
-        a = random.randint(0,len(ages)-1)
-        pat = Patient(
-            first_name=names[n],
-            second_name=families[f],
-            patronymic=patronymics[p],
-            phone_number=phone_number,
-            age=ages[a],
-        )
-        db.session.add(pat)
+#     for i in range(2000):
+#         n = random.randint(0,len(names)-1)
+#         f = random.randint(0,len(families)-1)
+#         p = random.randint(0,len(patronymics)-1)
+#         a = random.randint(0,len(ages)-1)
+#         pat = Patient(
+#             first_name=names[n],
+#             second_name=families[f],
+#             patronymic=patronymics[p],
+#             phone_number=phone_number,
+#             age=ages[a],
+#         )
+#         db.session.add(pat)
     
-    db.session.commit()
-    flash('Done!')
-    return redirect(url_for('patasys.index'))
+#     db.session.commit()
+#     flash('Done!')
+#     return redirect(url_for('patasys.index'))
 
 
 @login_required

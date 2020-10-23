@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*- 
-import random
+# import random
+from app.calendar.cal_setup import get_calendar_service
 from config import Config
 from app.auth.routes import login
 from flask import render_template, redirect, flash, request
@@ -12,6 +13,7 @@ from app.patasys.forms import AddPatientForm, AddDoctorForm, AddServiceForm, Add
 from app.models import Patient, Doctor, Service, Visit
 from app import db
 from datetime import datetime
+from datetime import timedelta
 import time
 from config import Config
 
@@ -269,6 +271,27 @@ def view_patient(patient_id, funcc):
                 patient_id = patient_id,
             )
             db.session.add(visit)
+
+            
+            service = get_calendar_service()
+            start_time = datetime.fromtimestamp(time.mktime(tim))
+            end_time = start_time+timedelta(hours=1)
+            sum = patient.second_name + " " + patient.first_name
+            description = f"""
+ФИО пациента: {patient.second_name} {patient.first_name} {patient.patronymic}
+Номер телефона: {patient.phone_number}
+http://127.0.0.1:5000/patient/{str(patient.id)}/1
+            """
+            event_result = service.events().insert(calendarId=Config.CALENDAR_ID,
+                body={
+                    "summary": sum,
+                    "description": description,
+                    "start": {"dateTime": start_time.isoformat(), "timeZone": 'Europe/Moscow'},
+                    "end": {"dateTime": end_time.isoformat(), "timeZone": 'Europe/Moscow'},
+                    "colorId": 2,
+                }
+            ).execute()
+            print("created event")
             db.session.commit()
             flash('Время успешно записано')
             return redirect(url_for('patasys.view_patient',
@@ -305,19 +328,29 @@ def add_service():
 @login_required
 @bp.route('/schedule')
 def schedule():
-    hours = int(datetime.today().strftime("%H"))
-    minutes = int(datetime.today().strftime("%M"))
-    # visits = Visit.query.filter(
-    #     Visit.visit_time>=(int(time.time())-(hours*3600-minutes*60)),
-    #     Visit.visit_time<=(int(time.time())+((24-hours)*3600-minutes*60)),
+    # hours = int(datetime.today().strftime("%H"))
+    # minutes = int(datetime.today().strftime("%M"))
+    # # visits = Visit.query.filter(
+    # #     Visit.visit_time>=(int(time.time())-(hours*3600-minutes*60)),
+    # #     Visit.visit_time<=(int(time.time())+((24-hours)*3600-minutes*60)),
            
-    # )
-    visits = Visit.query.all()
-    pats = {}
-    for v in visits:
-        pa = Patient.query.filter_by(id=v.patient_id)
-        q = {v.patient_id:pa}
-        pats.update(q)
-    
+    # # )
+    # visits = Visit.query.all()
+    # pats = {}
+    # for v in visits:
+    #     pa = Patient.query.filter_by(id=v.patient_id)
+    #     q = {v.patient_id:pa}
+    #     pats.update(q)
+    service = get_calendar_service()
+    now = (datetime.utcnow()-timedelta(days=1)).isoformat() + 'Z'
+    now_end = (datetime.utcnow()+timedelta(days=30)).isoformat() + 'Z'
+    # now = datetime.datetime.now().date()
+    # start = datetime.datetime(2020, 10, 23, 18).isoformat()
+    # end = datetime.datetime(2020, 10, 23, 19).isoformat()
 
-    return render_template('patasys/schedule.html', visits=visits, patients=pats)
+    events_result = service.events().list(calendarId=Config.CALENDAR_ID, timeMin=now,
+                                        timeMax=now_end, singleEvents=True,
+                                        orderBy='startTime').execute()
+    events = events_result.get('items', [])
+
+    return render_template('patasys/schedule.html', events=events)

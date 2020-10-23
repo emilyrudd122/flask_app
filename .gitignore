@@ -126,3 +126,7 @@ dmypy.json
 app.db
 *.db
 migrations/
+
+token.pickle
+
+app/calendar/credentials.json

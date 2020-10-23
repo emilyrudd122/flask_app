@@ -8,3 +8,4 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DATETIME_FORMAT = "%d-%m-%Y %H:%M"
     PATIENTS_PER_PAGE = 5
+    CALENDAR_ID = "d6b6kgf2fhrkesmotonnu3i6vg@group.calendar.google.com"

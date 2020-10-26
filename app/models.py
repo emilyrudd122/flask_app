@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import unique
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -67,6 +68,7 @@ class Visit(db.Model):
     service_ids = db.Column(db.String)
     cost = db.Column(db.Integer)
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'))
+    event_id = db.Column(db.String, unique=True)
 
 
 class Service(db.Model):

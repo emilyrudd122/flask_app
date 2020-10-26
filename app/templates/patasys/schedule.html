@@ -14,11 +14,13 @@
         {% endfor %} -->
 
         {% if events %}
-        {% for e in events %}
+            {% for e in events %}
 
-            {{ e.summary }}
+                {{ e.id }}
+                {{ e.summary }}
+                <br>
 
-        {% endfor %}
+            {% endfor %}
         {% endif %}
     </div>
 {% endblock %}
